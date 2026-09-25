@@ -1,4 +1,4 @@
-Yes — the previous one is **too detailed for a GitHub README**. I’d use this tighter version: enough technical depth to look serious, but much easier for an evaluator to scan.
+
 
 ````markdown
 # Smart Radar Adaptive Scanning
