@@ -1,6 +1,3 @@
-
-
-````markdown
 # Smart Radar Adaptive Scanning
 
 ### GRU-Based Temporal Prediction and Bayesian Adaptive Scan Scheduling
@@ -35,7 +32,7 @@ Adaptive Scan
 HIT / MISS
         ↓
 Bayesian Update
-````
+```
 
 The core idea is:
 
@@ -45,9 +42,7 @@ The core idea is:
 
 ## 2. Dataset
 
-The project uses:
-
-**Turing Synthetic Radar Dataset (TSRD)**
+The project uses the **Turing Synthetic Radar Dataset (TSRD)**.
 
 Primary experiment:
 
@@ -133,7 +128,7 @@ Sequence shapes:
 
 ---
 
-# 5. Timing GRU
+## 5. Timing GRU
 
 The final timing-focused GRU is:
 
@@ -166,9 +161,9 @@ Predicted next ΔToA
 
 ---
 
-# 6. GRU Results
+## 6. GRU Results
 
-## Timing-Only GRU — Validation
+### Timing-Only GRU — Validation
 
 | Metric            |      Result |
 | ----------------- | ----------: |
@@ -180,11 +175,7 @@ Predicted next ΔToA
 
 > **0.4102 is a validation result, not a held-out test result.**
 
----
-
-## Held-Out Multi-Output GRU Test
-
-The clean held-out test result available from the earlier GRU is:
+### Held-Out Multi-Output GRU Test
 
 | Metric          |       Result |
 | --------------- | -----------: |
@@ -197,7 +188,7 @@ The clean held-out test result available from the earlier GRU is:
 
 ---
 
-# 7. GRU vs Statistical Baseline
+## 7. GRU vs Statistical Baseline
 
 A median-of-previous-32 timing predictor was used as the statistical baseline.
 
@@ -216,15 +207,15 @@ RMSE ≈ 11.68%
 Emitter-level evaluation:
 
 ```text
-GRU better:        29 / 44 emitters
+GRU better:         29 / 44 emitters
 Statistical better: 15 / 44 emitters
 ```
 
 ---
 
-# 8. Bayesian State Tracking
+## 8. Bayesian State Tracking
 
-A Beta-Bernoulli model estimates emitter activity.
+A Beta-Bernoulli model estimates emitter activity:
 
 ```text
 P(active) = α / (α + β)
@@ -239,11 +230,11 @@ After HIT     → 0.7500
 After MISS    → 0.6000
 ```
 
-This state is passed to the scheduling layer.
+This probabilistic state is passed to the scheduling layer.
 
 ---
 
-# 9. Priority / Risk Score
+## 9. Priority / Risk Score
 
 The prototype combines timing urgency, activity, confidence and uncertainty:
 
@@ -268,16 +259,16 @@ Example:
 
 ---
 
-# 10. Rendezvous Prediction
+## 10. Rendezvous Prediction
 
-The GRU prediction is converted into a future scan opportunity:
+The predicted timing is converted into a future scan opportunity:
 
 ```text
 Rendezvous Time =
 Current ToA + Predicted ΔToA
 ```
 
-An uncertainty-dependent scan window is then created.
+An uncertainty-dependent scan window is generated around the predicted rendezvous.
 
 Example:
 
@@ -292,7 +283,7 @@ Window = 1015 – 1025
 
 ---
 
-# 11. Thompson Sampling
+## 11. Thompson Sampling
 
 Each emitter maintains a Beta distribution:
 
@@ -324,9 +315,9 @@ Exploration =
 
 ---
 
-# 12. Closed-Loop Simulation
+## 12. Closed-Loop Simulation
 
-A synthetic environment was created to test the complete feedback loop.
+A synthetic environment was created to test the complete feedback loop:
 
 ```text
 Prediction
@@ -360,13 +351,18 @@ Over 100 simulated scans:
 
 ---
 
-# 13. Technology Stack
+## 13. Technology Stack
 
-### ML / Data
+### Machine Learning
 
 * Python
 * TensorFlow / Keras
 * GRU
+* Huber Loss
+* Adam Optimizer
+
+### Data Processing
+
 * NumPy
 * Pandas
 * h5py
@@ -384,15 +380,15 @@ Over 100 simulated scans:
 
 Interactive UI / digital-twin layer for:
 
-* emitter visualization
-* frequency regions
-* timing predictions
-* scan scheduling
-* scheduler decisions
+* Emitter visualization
+* Frequency regions
+* Timing predictions
+* Scan scheduling
+* Scheduler decisions
 
 ---
 
-# 14. Final Architecture
+## 14. Final Architecture
 
 ```text
 Interleaved PDWs
@@ -420,11 +416,11 @@ State Update
 
 ---
 
-# 15. Limitations
+## 15. Limitations
 
 * Current emitter-specific experiments use ground-truth labels for development tracking.
 * The GRU predicts timing but does not independently solve full blind PDW deinterleaving.
-* Extreme timing gaps create large MAE/RMSE values.
+* Extreme timing gaps produce large MAE/RMSE values.
 * The timing-only GRU's `0.4102` result is validation performance.
 * Scheduler weights are prototype parameters.
 * The 91% scheduler result is synthetic and not a TSRD benchmark.
@@ -432,26 +428,26 @@ State Update
 
 ---
 
-# 16. Future Work
+## 16. Future Work
 
-### 1. Real PDW Association
+### Real PDW Association
 
-Replace ground-truth emitter IDs with actual:
+Replace ground-truth emitter IDs with actual association using:
 
 ```text
 PRI / ToA
 + Frequency
-+ PW
++ Pulse Width
 + AoA
 + Amplitude
 + Track consistency
 ```
 
-### 2. Joint Association + Prediction
+### Joint Association + Prediction
 
 Use predicted timing to assist emitter association.
 
-### 3. Better Uncertainty Modeling
+### Better Uncertainty Modeling
 
 Explore:
 
@@ -460,19 +456,23 @@ Explore:
 * Quantile Regression
 * Probabilistic GRUs
 
-### 4. Frequency-Aware Scheduling
+### Frequency-Aware Scheduling
 
-Move from emitter-only scheduling to:
+Move from:
 
 ```text
-Emitter + Frequency Region
+Emitter Scheduling
+```
+
+to:
+
+```text
+Emitter + Frequency Region Scheduling
 ```
 
 under receiver bandwidth constraints.
 
-### 5. Hardware-in-the-Loop
-
-Connect:
+### Hardware-in-the-Loop
 
 ```text
 Prediction
@@ -482,32 +482,30 @@ Prediction
 → Bayesian Update
 ```
 
-to an SDR/RF simulator.
+---
+
+## 17. Project Status
+
+| Component                          | Status      |
+| ---------------------------------- | ----------- |
+| TSRD loading                       | Complete    |
+| PDW processing                     | Complete    |
+| Temporal features                  | Complete    |
+| GRU prediction                     | Complete    |
+| Statistical baseline               | Complete    |
+| Bayesian tracking                  | Complete    |
+| Priority scoring                   | Complete    |
+| Rendezvous prediction              | Complete    |
+| Thompson Sampling                  | Complete    |
+| Synthetic closed-loop simulation   | Complete    |
+| Interactive UI                     | Complete    |
+| Real PDW association               | Future Work |
+| Full TSRD deinterleaving benchmark | Future Work |
+| Hardware validation                | Future Work |
 
 ---
 
-# 17. Project Status
-
-| Component                          | Status |
-| ---------------------------------- | ------ |
-| TSRD loading                       | ✅      |
-| PDW processing                     | ✅      |
-| Temporal features                  | ✅      |
-| GRU prediction                     | ✅      |
-| Statistical baseline               | ✅      |
-| Bayesian tracking                  | ✅      |
-| Priority scoring                   | ✅      |
-| Rendezvous prediction              | ✅      |
-| Thompson Sampling                  | ✅      |
-| Synthetic closed-loop simulation   | ✅      |
-| Interactive UI                     | ✅      |
-| Real PDW association               | ⏳      |
-| Full TSRD deinterleaving benchmark | ⏳      |
-| Hardware validation                | ⏳      |
-
----
-
-# 18. Key Takeaway
+## 18. Key Takeaway
 
 The project demonstrates a complete closed-loop adaptive radar scanning architecture:
 
@@ -526,11 +524,9 @@ LEARN
    ↺
 ```
 
-The main experimental finding is that the GRU captures useful temporal structure beyond a simple statistical timing baseline, while the Bayesian and Thompson Sampling layers convert those predictions into an adaptive scan decision.
+The main experimental finding is that the GRU captures useful temporal structure beyond a simple statistical timing baseline, while Bayesian state estimation and Thompson Sampling convert those predictions into an adaptive scan policy.
 
 The next major step is replacing ground-truth emitter grouping with a real PDW association/deinterleaving system and evaluating the complete pipeline under realistic receiver constraints.
 
 ```
-
-**This is the version I'd actually put on your GitHub.** It keeps the important numbers, formulas, architecture, limitations, and future work, but removes most of the explanatory repetition from the previous README.
 ```
